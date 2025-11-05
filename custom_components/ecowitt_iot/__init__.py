@@ -26,6 +26,29 @@ PLATFORMS: list[Platform] = [
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Ecowitt IoT from a config entry."""
+
+    # DEPRECATION WARNING
+    _LOGGER.warning(
+        "⚠️ DEPRECATION WARNING ⚠️ The ecowitt_iot integration is deprecated. "
+        "Please migrate to the official Ecowitt integration: "
+        "https://github.com/Ecowitt/ha-ecowitt-iot - "
+        "See MIGRATION.md for instructions."
+    )
+
+    # Create persistent notification
+    hass.components.persistent_notification.async_create(
+        title="⚠️ Ecowitt IoT Integration Deprecated",
+        message=(
+            "The **ecowitt_iot** integration is deprecated and will no longer receive updates.\n\n"
+            "Please migrate to the **official Ecowitt integration**:\n"
+            "https://github.com/Ecowitt/ha-ecowitt-iot\n\n"
+            "📖 See the [MIGRATION.md](https://github.com/Bwooce/ecowitt_iot/blob/main/MIGRATION.md) "
+            "guide for step-by-step instructions.\n\n"
+            "The official integration provides the same functionality with company support."
+        ),
+        notification_id="ecowitt_iot_deprecation",
+    )
+
     try:
         _LOGGER.debug("Setting up entry with data: %s", entry.data)
 

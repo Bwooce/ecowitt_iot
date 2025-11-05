@@ -1,6 +1,6 @@
 {
     "domain": "ecowitt_iot",
-    "name": "Ecowitt IoT",
+    "name": "Ecowitt IoT (DEPRECATED)",
     "codeowners": ["@bwooce"],
     "config_flow": true,
     "dependencies": [],
@@ -10,6 +10,6 @@
     "issue_tracker": "https://github.com/Bwooce/ecowitt_iot/issues",
     "requirements": [],
     "ssdp": [],
-    "version": "0.1.0",
+    "version": "0.2.0",
     "zeroconf": []
 }

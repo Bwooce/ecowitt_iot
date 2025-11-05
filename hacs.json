@@ -1,3 +1,5 @@
 {
-    "name": "ecowitt_iot"
+    "name": "ecowitt_iot (DEPRECATED - Use Official Integration)",
+    "render_readme": true,
+    "homeassistant": "2021.12.0"
 }

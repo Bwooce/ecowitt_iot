@@ -1,5 +1,27 @@
 # ecowitt_iot custom integration for HACS HomeAssistant
 
+## ⚠️ DEPRECATION NOTICE ⚠️
+
+**This integration is deprecated and will no longer be maintained.**
+
+Please migrate to the **official Ecowitt company integration**: https://github.com/Ecowitt/ha-ecowitt-iot
+
+### Why Migrate?
+- ✅ **Official company support** from Ecowitt
+- ✅ **Same functionality** - supports WFC01 water timer and AC1100 smart plug
+- ✅ **Better maintenance** - regular updates and bug fixes
+- ✅ **Same architecture** - local polling, no cloud dependency
+
+### For Existing Users
+📖 **See [MIGRATION.md](MIGRATION.md) for complete step-by-step migration instructions.**
+
+### For New Users
+❌ **Do not install this integration.** Use the official integration instead: https://github.com/Ecowitt/ha-ecowitt-iot
+
+---
+
+## About This Integration (Historical)
+
 This custom integration supports the WFC01 WittFlow water timer and the AC1100 WittSwitch smart plug.
 
 Created as the existing core ecowitt integration is a push based implementation (runs a server listening for weather station data), and the Ecowitt IOT devices need a polling/local api approach. Smooshing them together seemed overly complicated, so this is a different standalone integration. There's no cross-over interference with the core ecowitt integration, they're not working with the same end-devices, and if you have both Ecowitt IOT and non-IOT (weatherstation, soil sensors) devices then you want both this integration and the core one [docs](https://www.home-assistant.io/integrations/ecowitt/).
