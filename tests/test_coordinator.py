@@ -104,3 +104,34 @@ async def test_bare_200_ok_replays_the_last_real_reading(coordinator) -> None:
 
     assert replayed == good
     assert replayed[DEVICE_ID]["command"][0]["water_total"] == "1501.855"
+
+
+async def test_payload_without_device_fields_is_not_a_reading(coordinator) -> None:
+    """A well-formed envelope with none of the device fields is not a reading.
+
+    The gateway answers `{"command":[{}]}` (or with only the envelope keys)
+    while it has not read the device. Parsing succeeds, so caching it would
+    serve that empty payload to the entities, whose own defaults turn it into
+    0 litres and a closed valve.
+    """
+    _respond_with(coordinator, '{"command":[{}]}')
+
+    data = await coordinator._async_update_data()
+
+    assert DEVICE_ID not in data
+    assert coordinator._last_good_data == {}
+
+
+async def test_payload_without_device_fields_replays_the_last_reading(
+    coordinator,
+) -> None:
+    """With a real reading already seen, an empty payload does not poison it."""
+    _respond_with(coordinator, REAL_READING)
+    good = await coordinator._async_update_data()
+
+    _respond_with(coordinator, '{"command":[{"timeutc": 1600000001}]}')
+    replayed = await coordinator._async_update_data()
+
+    assert replayed == good
+    assert replayed[DEVICE_ID]["command"][0]["water_total"] == "1501.855"
+

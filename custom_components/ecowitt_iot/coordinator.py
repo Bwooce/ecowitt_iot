@@ -131,6 +131,24 @@ class EcowittDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
                 try:
                     data = json.loads(text)
+                    if not self._payload_has_reading(device, data):
+                        # A well-formed envelope without the device fields is
+                        # not a reading either: caching it would poison the
+                        # fallback and feed the entities' own defaults (0 / off)
+                        # on every subsequent poll.
+                        _LOGGER.warning(
+                            "Gateway at %s answered without device fields for %s: %s",
+                            self.host,
+                            device.device_id,
+                            str(data)[:200],
+                        )
+                        if device.device_id in self._last_good_data:
+                            return self._last_good_data[device.device_id]
+                        raise UpdateFailed(
+                            f"Gateway at {self.host} returned no device fields "
+                            f"for {device.device_id}; no previous reading to fall "
+                            "back on"
+                        )
                     # Store this as last known good data
                     self._last_good_data[device.device_id] = data
                     _LOGGER.debug(
@@ -151,6 +169,22 @@ class EcowittDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 "Error fetching data for device %s: %s", device.device_id, err
             )
             raise
+
+    @staticmethod
+    def _payload_has_reading(device: EcowittDeviceDescription, data: Any) -> bool:
+        """Return True only if the payload carries the device's own fields."""
+        try:
+            fields = data["command"][0]
+        except (KeyError, IndexError, TypeError):
+            return False
+        if not isinstance(fields, dict):
+            return False
+        required = (
+            ("water_total", "flow_velocity")
+            if device.model == 1
+            else ("ac_status", "realtime_power")
+        )
+        return any(key in fields for key in required)
 
     async def set_device_state(self, device_id: str, state: bool) -> None:
         """Set device state."""

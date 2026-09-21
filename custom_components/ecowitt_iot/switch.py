@@ -120,6 +120,12 @@ class EcowittSwitch(CoordinatorEntity[EcowittDataUpdateCoordinator], SwitchEntit
             _LOGGER.debug("Switch status check - Device data: %s", device_data)
 
             if self._device.model == 1:  # WFC01
+                if not any(
+                    key in device_data
+                    for key in ("water_status", "always_on", "water_running")
+                ):
+                    # No status fields at all: unknown, not "off".
+                    return None
                 # Check both water_status and always_on
                 water_status = device_data.get("water_status", 0)
                 always_on = device_data.get("always_on", 0)
