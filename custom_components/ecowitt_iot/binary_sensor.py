@@ -151,6 +151,15 @@ class EcowittBinarySensor(
         """Return true if the binary sensor is on."""
         try:
             device_data = self.coordinator.data[self._device.device_id]["command"][0]
+            if "warning" not in device_data:
+                # The warning byte is an assertion of safety (leak, no water,
+                # temperature, battery, connectivity). Absent is unknown, not
+                # "all clear".
+                _LOGGER.debug(
+                    "No warning byte in payload for device %s", self._device.device_id
+                )
+                return None
+
             warning_byte = device_data.get("warning", 0)
 
             _LOGGER.debug(
