@@ -287,6 +287,16 @@ class EcowittSensor(CoordinatorEntity[EcowittDataUpdateCoordinator], SensorEntit
                 device_data,
             )
 
+            if self.entity_description.value_fn not in device_data:
+                # A missing key means the gateway sent no reading for this
+                # device, which is not the same as a measured zero.
+                _LOGGER.debug(
+                    "No %s in payload for %s",
+                    self.entity_description.value_fn,
+                    self.entity_description.key,
+                )
+                return None
+
             raw_value = device_data.get(self.entity_description.value_fn, 0)
             _LOGGER.debug(
                 "Raw value for %s: %s", self.entity_description.key, raw_value

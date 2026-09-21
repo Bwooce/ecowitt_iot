@@ -5,7 +5,6 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-import time
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -105,21 +104,51 @@ class EcowittDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 _LOGGER.debug("Received response text: %s", text)
 
                 if text == "200 OK":
+                    # The gateway answers a bare "200 OK" when it has not (yet)
+                    # collected the device: the command was accepted but no
+                    # reading is available. Serving placeholder readings here is
+                    # indistinguishable from a real report downstream - a
+                    # fabricated water_total of "0.00" makes the next real
+                    # reading look like a meter rollover, which a utility_meter
+                    # helper then books as consumption. Fall back to the last
+                    # real reading when there is one, otherwise fail this
+                    # device's poll so its entities go unavailable instead of
+                    # reporting numbers that were never measured.
                     _LOGGER.debug(
                         "Received OK response for device %s", device.device_id
                     )
-                    # Use last known good data if available
                     if device.device_id in self._last_good_data:
                         _LOGGER.debug(
                             "Using last known good data for device %s", device.device_id
                         )
                         return self._last_good_data[device.device_id]
 
-                    # Otherwise use minimal data structure
-                    return self._get_default_data(device)
+                    raise UpdateFailed(
+                        f"Gateway at {self.host} returned no reading for device "
+                        f"{device.device_id} (\"200 OK\"); no previous reading to "
+                        "fall back on"
+                    )
 
                 try:
                     data = json.loads(text)
+                    if not self._payload_has_reading(device, data):
+                        # A well-formed envelope without the device fields is
+                        # not a reading either: caching it would poison the
+                        # fallback and feed the entities' own defaults (0 / off)
+                        # on every subsequent poll.
+                        _LOGGER.warning(
+                            "Gateway at %s answered without device fields for %s: %s",
+                            self.host,
+                            device.device_id,
+                            str(data)[:200],
+                        )
+                        if device.device_id in self._last_good_data:
+                            return self._last_good_data[device.device_id]
+                        raise UpdateFailed(
+                            f"Gateway at {self.host} returned no device fields "
+                            f"for {device.device_id}; no previous reading to fall "
+                            "back on"
+                        )
                     # Store this as last known good data
                     self._last_good_data[device.device_id] = data
                     _LOGGER.debug(
@@ -141,37 +170,21 @@ class EcowittDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             )
             raise
 
-    def _get_default_data(self, device: EcowittDeviceDescription) -> dict[str, Any]:
-        """Get default data structure for device."""
-        base_data = {
-            "model": device.model,
-            "id": device.device_id,
-            "warning": 0,
-            "rssi": 0,
-            "gw_rssi": 0,
-            "timeutc": int(time.time()),
-        }
-
-        if device.model == 1:  # WFC01
-            base_data.update(
-                {
-                    "water_status": 0,
-                    "flow_velocity": "0.00",
-                    "water_total": "0.00",
-                    "water_temp": "20.0",
-                }
-            )
-        else:  # AC1100
-            base_data.update(
-                {
-                    "ac_status": 0,
-                    "realtime_power": 0,
-                    "ac_voltage": 0,
-                    "ac_current": 0,
-                }
-            )
-
-        return {"command": [base_data]}
+    @staticmethod
+    def _payload_has_reading(device: EcowittDeviceDescription, data: Any) -> bool:
+        """Return True only if the payload carries the device's own fields."""
+        try:
+            fields = data["command"][0]
+        except (KeyError, IndexError, TypeError):
+            return False
+        if not isinstance(fields, dict):
+            return False
+        required = (
+            ("water_total", "flow_velocity")
+            if device.model == 1
+            else ("ac_status", "realtime_power")
+        )
+        return any(key in fields for key in required)
 
     async def set_device_state(self, device_id: str, state: bool) -> None:
         """Set device state."""
