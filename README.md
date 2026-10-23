@@ -45,7 +45,7 @@ plug; the vendor has now filled that gap properly.
 | WFC02 | No | Yes |
 | Valve / plug switch | Yes | Yes, with optimistic state |
 | Flow rate, water total, power, voltage, energy | Yes | Yes |
-| Water temperature unit | °C or °F | °F, converted by HA |
+| Water temperature unit | °C or °F (selectable) | °F label, converted by HA |
 | Warning-bit binary sensors (leak, no water, temp, battery) | Yes | No |
 | Device-side timed run / run by volume (services) | Yes | No |
 | Weather-station sensors on the same gateway | No | Yes |
@@ -73,9 +73,16 @@ not expose it).
   `services.yaml` has advertised since 0.1.0 now exist, plus
   `run_by_volume` for the WFC01 (#3). All three run the timer on the
   gateway (`quick_run` with `always_on: 0`), so the output stops even if
-  Home Assistant goes away mid-cycle. The config flow's temperature unit
-  option is unchanged; the API documents `water_temp` as °F, so if your
-  reading looks wrong under °C that is why (#14).
+  Home Assistant goes away mid-cycle.
+* The switch now reports `water_status` / `ac_status` only. On a real
+  WFC01 `water_running` lags the valve state by about a second after
+  `quick_stop`, which left the switch showing on for a full poll.
+* The config flow's temperature unit option is unchanged. Ecowitt's API
+  document says `water_temp` is °F, but a GW2000 with firmware 3.3.2
+  reports Sydney mains water as 18.8–20.2, which is plainly °C. If your
+  reading looks wrong, change the unit in the integration options (#14).
+* `run_by_volume` sends tenths of a litre to the gateway (the API
+  document's "volume (L)" is wrong), capped at 1000 L per call.
 * Merged local brand assets (#21).
 
 ## Reference

@@ -22,6 +22,7 @@ from .const import (
     ATTR_DURATION,
     ATTR_VOLUME,
     DOMAIN,
+    MAX_VOLUME_LITRES,
     MODEL_AC1100,
     MODEL_WFC01,
     SERVICE_RUN_BY_VOLUME,
@@ -50,7 +51,7 @@ TIMER_SCHEMA = {
 }
 VOLUME_SCHEMA = {
     vol.Required(ATTR_VOLUME): vol.All(
-        vol.Coerce(int), vol.Range(min=1, max=100000)
+        vol.Coerce(int), vol.Range(min=1, max=MAX_VOLUME_LITRES)
     ),
 }
 
@@ -210,23 +211,13 @@ class EcowittSwitch(
                 "Switch status check - Device data: %s", device_data
             )
 
-            if self._device.model == 1:  # WFC01
-                # Check both water_status and always_on
-                water_status = device_data.get("water_status", 0)
-                always_on = device_data.get("always_on", 0)
-                is_running = device_data.get("water_running", 0)
-
-                _LOGGER.debug(
-                    "WFC01 state check - water_status: %s, always_on: %s, water_running: %s",
-                    water_status,
-                    always_on,
-                    is_running,
-                )
-
-                # Return true if either condition is met
-                return bool(water_status) or bool(is_running)
-            else:  # AC1100
-                return bool(device_data.get("ac_status", 0))
+            # water_status / ac_status is the valve or relay state. On a
+            # live WFC01 water_running lags water_status by about a
+            # second after quick_stop, so OR-ing it in left the switch
+            # showing on for a whole poll interval after turning off.
+            return bool(
+                device_data.get(self.entity_description.status_key, 0)
+            )
         except (KeyError, IndexError) as err:
             _LOGGER.error("Error getting switch state: %s", err)
             return None

@@ -154,3 +154,20 @@ async def test_timer_services_are_registered_and_dispatch(
 
     await switch.async_run_for_volume(20)
     mock_coordinator.run_for_volume.assert_awaited_once_with("12345", 20)
+
+
+async def test_switch_ignores_lagging_water_running(
+    hass: HomeAssistant,
+    mock_coordinator,
+    mock_add_entities,
+    mock_switch_entry,
+) -> None:
+    """water_running lags water_status after quick_stop; valve is off."""
+    mock_coordinator.data["12345"]["command"][0].update(
+        {"water_status": 0, "water_running": 1}
+    )
+    await _setup(
+        hass, mock_coordinator, mock_add_entities, mock_switch_entry
+    )
+
+    assert hass.states.get(ENTITY_ID).state == STATE_OFF
