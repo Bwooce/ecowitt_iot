@@ -152,8 +152,6 @@ class EcowittSwitch(
             await self.coordinator.set_device_state(
                 self._device.device_id, True
             )
-            # Force an immediate update after state change
-            await self.coordinator.async_request_refresh()
         except Exception as err:
             _LOGGER.error(
                 "Error turning on device %s: %s",
@@ -168,8 +166,6 @@ class EcowittSwitch(
             await self.coordinator.set_device_state(
                 self._device.device_id, False
             )
-            # Force an immediate update after state change
-            await self.coordinator.async_request_refresh()
         except Exception as err:
             _LOGGER.error(
                 "Error turning off device %s: %s",

@@ -241,7 +241,9 @@ class EcowittDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         _LOGGER.debug("Running device %s for %s L", device_id, litres)
         await self._send_command(
             self._quick_run(
-                device, VAL_TYPE_LITRES, int(litres) * VOLUME_UNITS_PER_LITRE
+                device,
+                VAL_TYPE_LITRES,
+                int(litres) * VOLUME_UNITS_PER_LITRE,
             )
         )
 
@@ -264,8 +266,11 @@ class EcowittDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                         f"Failed to set device state: {text}"
                     )
 
+                # Read back immediately. async_request_refresh() goes
+                # through a 10 s debounce, so an off within 10 s of an
+                # on showed in HA up to 10 s late on a live WFC01.
                 await asyncio.sleep(1)
-                await self.async_request_refresh()
+                await self.async_refresh()
 
         except Exception as err:
             _LOGGER.error("Error setting device state: %s", err)
