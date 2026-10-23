@@ -26,8 +26,9 @@ later: a bare `200 OK` from the gateway was being turned into zeroed
 readings, which `utility_meter` helpers booked as a meter rollover
 (#19). The coordinator now keeps the last real reading instead.
 
-Also: a Repairs notice announcing the deprecation, clean unload, brand
-assets (#21), and the never-implemented timer services removed.
+Also new: `set_valve_timer`, `set_power_timer` and `run_by_volume`
+services that run the timer on the gateway itself (#3), a Repairs notice
+announcing the deprecation, clean unload, and brand assets (#21).
 
 Thank you to everyone who tested and reported. No further releases.
 
@@ -72,3 +73,6 @@ and keeps releases installable through HACS.
   release, not a tidy-up.
 - The WFC02 requests (#15, #17, #18) are met by the official
   integration, not here.
+- #3 (water by volume) and #4 (water this session) — #3 is now done via
+  `run_by_volume`; #4 is `water_total - happen_water` and is left for
+  the official integration.
