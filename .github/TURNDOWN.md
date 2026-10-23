@@ -73,6 +73,19 @@ For #20 add: "The integration was never in the HACS default list, only
 installable as a custom repository; HACS 2.x stopped listing custom
 repositories you have not added, which is what you saw."
 
+## 2a. Pull requests
+
+- #21 (brand assets): its commit is on `turndown` unchanged, so GitHub
+  marks it merged when #22 lands. Verify; close manually if not.
+- #19 (fabricated readings, closed unmerged): comment and leave closed:
+
+  > Thank you for this - the diagnosis was exactly right and the fix in
+  > 0.2.0 (final release) does what your PR did: a bare `200 OK` now
+  > keeps the last real reading or leaves the device unavailable, never
+  > zeroed values. Credited in the README and release notes. Sorry it
+  > sat unanswered; the project is winding down in favour of Ecowitt's
+  > official integration (see the README).
+
 ## 3. Archive (on ARCHIVE_DATE, three months after release)
 
 Settings → General → Archive this repository. Archiving is reversible
