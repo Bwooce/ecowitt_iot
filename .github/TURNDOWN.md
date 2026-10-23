@@ -82,3 +82,7 @@ archive, respond to new issues only with the pointer above.
 - #3 (water by volume) and #4 (water this session) — #3 is now done via
   `run_by_volume`; #4 is `water_total - happen_water` and is left for
   the official integration.
+- Ecowitt's "Local IoT API" document says `val_type` 3 is "volume (L)".
+  It is tenths of a litre (confirmed on a live WFC01 and by the
+  `wittiot` library's `val / 10`). Worth noting if anyone raises the
+  volume feature on the official repository.
