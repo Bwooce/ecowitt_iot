@@ -7,8 +7,14 @@
 > **https://github.com/Ecowitt/ha-ecowitt-iot**
 >
 > Release 0.2.0 is the final release of `ecowitt_iot`. It contains one
-> safety fix (see below) and a Repairs notice pointing you here. No
-> further changes will be made and new issues will not be worked on.
+> safety fix (see below), the long-promised timer services, and a
+> Repairs notice pointing you here. No further changes will be made
+> and new issues will not be worked on.
+>
+> **The repository will be archived three months after the 0.2.0
+> release date** (the exact date is in the release notes). Archiving
+> makes it read-only; the 0.2.0 release stays installable through HACS,
+> but nothing will be updated and issues cannot be opened.
 
 Thank you to everyone who tested, reported bugs and sent pull requests.
 This started because the core `ecowitt` integration is push-based and

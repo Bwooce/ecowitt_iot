@@ -1,6 +1,9 @@
 # Turndown runbook
 
 Steps to run once PR #22 is merged. Each one is a public action.
+Timeline: release and close issues on day 0; archive three months
+later, to give people time to migrate. Set ARCHIVE_DATE = release date
++ 3 months and substitute it below before posting.
 
 ## 1. Release v0.2.0
 
@@ -31,6 +34,8 @@ services that run the timer on the gateway itself (#3), a Repairs notice
 announcing the deprecation, clean unload, and brand assets (#21).
 
 Thank you to everyone who tested and reported. No further releases.
+This repository will be archived on ARCHIVE_DATE; 0.2.0 stays
+installable through HACS after that, but nothing more will change.
 
 ---
 
@@ -49,7 +54,7 @@ https://github.com/Ecowitt/ha-ecowitt-iot
 
 If this issue still applies there, please raise it on that repository.
 Release 0.2.0 of this integration is final; the README has a migration
-guide.
+guide. The repository will be archived on ARCHIVE_DATE.
 
 ---
 
@@ -62,10 +67,11 @@ For #20 add: "The integration was never in the HACS default list, only
 installable as a custom repository; HACS 2.x stopped listing custom
 repositories you have not added, which is what you saw."
 
-## 3. Archive
+## 3. Archive (on ARCHIVE_DATE, three months after release)
 
 Settings → General → Archive this repository. Archiving is reversible
-and keeps releases installable through HACS.
+and keeps releases installable through HACS. Between release and
+archive, respond to new issues only with the pointer above.
 
 ## Not done
 
