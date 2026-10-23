@@ -5,7 +5,6 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-import time
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -15,7 +14,10 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import aiohttp_client
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.helpers.update_coordinator import (
+    DataUpdateCoordinator,
+    UpdateFailed,
+)
 from homeassistant.util import dt as dt_util
 
 from .const import DEFAULT_SCAN_INTERVAL, DOMAIN
@@ -54,7 +56,9 @@ class EcowittDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         except asyncio.TimeoutError as err:
             raise UpdateFailed("Timeout communicating with API") from err
         except ClientError as err:
-            raise UpdateFailed(f"Error communicating with API: {err}") from err
+            raise UpdateFailed(
+                f"Error communicating with API: {err}"
+            ) from err
         except Exception as err:
             raise UpdateFailed(f"Unexpected error: {err}") from err
 
@@ -74,7 +78,9 @@ class EcowittDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 )
                 # Use last known good data if available
                 if device.device_id in self._last_good_data:
-                    data[device.device_id] = self._last_good_data[device.device_id]
+                    data[device.device_id] = self._last_good_data[
+                        device.device_id
+                    ]
         return data
 
     async def _fetch_device_data(
@@ -105,30 +111,38 @@ class EcowittDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 _LOGGER.debug("Received response text: %s", text)
 
                 if text == "200 OK":
-                    _LOGGER.debug(
-                        "Received OK response for device %s", device.device_id
-                    )
-                    # Use last known good data if available
+                    # A bare "200 OK" means the gateway accepted the
+                    # command but has no reading for this device yet.
+                    # Never synthesise readings here: a fabricated
+                    # water_total of 0 reads as a meter rollover to
+                    # TOTAL_INCREASING consumers such as utility_meter.
                     if device.device_id in self._last_good_data:
                         _LOGGER.debug(
-                            "Using last known good data for device %s", device.device_id
+                            "No new reading for device %s, keeping last",
+                            device.device_id,
                         )
                         return self._last_good_data[device.device_id]
 
-                    # Otherwise use minimal data structure
-                    return self._get_default_data(device)
+                    _LOGGER.debug(
+                        "No reading yet for device %s, leaving unavailable",
+                        device.device_id,
+                    )
+                    return {}
 
                 try:
                     data = json.loads(text)
                     # Store this as last known good data
                     self._last_good_data[device.device_id] = data
                     _LOGGER.debug(
-                        "Stored good data for device %s: %s", device.device_id, data
+                        "Stored good data for device %s: %s",
+                        device.device_id,
+                        data,
                     )
                     return data
                 except json.JSONDecodeError as err:
                     _LOGGER.error(
-                        "Error parsing JSON for device %s: %s. Response: %s",
+                        "Error parsing JSON for device %s: %s. "
+                        "Response: %s",
                         device.device_id,
                         err,
                         text,
@@ -137,45 +151,17 @@ class EcowittDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         except Exception as err:
             _LOGGER.error(
-                "Error fetching data for device %s: %s", device.device_id, err
+                "Error fetching data for device %s: %s",
+                device.device_id,
+                err,
             )
             raise
 
-    def _get_default_data(self, device: EcowittDeviceDescription) -> dict[str, Any]:
-        """Get default data structure for device."""
-        base_data = {
-            "model": device.model,
-            "id": device.device_id,
-            "warning": 0,
-            "rssi": 0,
-            "gw_rssi": 0,
-            "timeutc": int(time.time()),
-        }
-
-        if device.model == 1:  # WFC01
-            base_data.update(
-                {
-                    "water_status": 0,
-                    "flow_velocity": "0.00",
-                    "water_total": "0.00",
-                    "water_temp": "20.0",
-                }
-            )
-        else:  # AC1100
-            base_data.update(
-                {
-                    "ac_status": 0,
-                    "realtime_power": 0,
-                    "ac_voltage": 0,
-                    "ac_current": 0,
-                }
-            )
-
-        return {"command": [base_data]}
-
     async def set_device_state(self, device_id: str, state: bool) -> None:
         """Set device state."""
-        device = next((d for d in self.devices if d.device_id == device_id), None)
+        device = next(
+            (d for d in self.devices if d.device_id == device_id), None
+        )
         if not device:
             raise ValueError(f"Device {device_id} not found")
 
@@ -202,7 +188,11 @@ class EcowittDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         else:
             payload = {
                 "command": [
-                    {"cmd": "quick_stop", "id": int(device_id), "model": device.model}
+                    {
+                        "cmd": "quick_stop",
+                        "id": int(device_id),
+                        "model": device.model,
+                    }
                 ]
             }
 
@@ -218,14 +208,18 @@ class EcowittDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 _LOGGER.debug("Received response: %s", text)
 
                 if text != "200 OK":
-                    raise UpdateFailed(f"Failed to set device state: {text}")
+                    raise UpdateFailed(
+                        f"Failed to set device state: {text}"
+                    )
 
                 await asyncio.sleep(1)
                 await self.async_request_refresh()
 
         except Exception as err:
             _LOGGER.error("Error setting device state: %s", err)
-            raise UpdateFailed(f"Failed to set device state: {err}") from err
+            raise UpdateFailed(
+                f"Failed to set device state: {err}"
+            ) from err
 
     def get_device_last_update(self, device_id: str) -> datetime | None:
         """Get the last update time for a device."""
