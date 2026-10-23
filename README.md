@@ -41,12 +41,15 @@ plug; the vendor has now filled that gap properly.
 | Flow rate, water total, power, voltage, energy | Yes | Yes |
 | Water temperature unit | °C or °F | °F, converted by HA |
 | Warning-bit binary sensors (leak, no water, temp, battery) | Yes | No |
+| Device-side timed run / run by volume (services) | Yes | No |
 | Weather-station sensors on the same gateway | No | Yes |
 | Poll interval | Fixed 30 s | Configurable, default 10 s |
 
-If you relied on the warning-bit binary sensors, raise that as a feature
-request on the official repository; the data is available in the local
-API and the `wittiot` library the official integration uses.
+If you relied on the warning-bit binary sensors or the timer services,
+raise those as feature requests on the official repository; the data and
+commands are in the local API and in the `wittiot` library the official
+integration already uses (it supports a run duration internally but does
+not expose it).
 
 ## 0.2.0 — final release
 
@@ -60,8 +63,13 @@ API and the `wittiot` library the official integration uses.
 * Added a Repairs issue announcing the deprecation.
 * Added `async_unload_entry` so the integration can be reloaded and
   removed cleanly.
-* Removed `services.yaml`; the `set_valve_timer` and `set_power_timer`
-  services it described were never implemented.
+* **New:** the `set_valve_timer` and `set_power_timer` services that
+  `services.yaml` has advertised since 0.1.0 now exist, plus
+  `run_by_volume` for the WFC01 (#3). All three run the timer on the
+  gateway (`quick_run` with `always_on: 0`), so the output stops even if
+  Home Assistant goes away mid-cycle. The config flow's temperature unit
+  option is unchanged; the API documents `water_temp` as °F, so if your
+  reading looks wrong under °C that is why (#14).
 * Merged local brand assets (#21).
 
 ## Reference

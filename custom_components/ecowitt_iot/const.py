@@ -50,3 +50,17 @@ OFFICIAL_INTEGRATION_URL: Final = (
     "https://github.com/Ecowitt/ha-ecowitt-iot"
 )
 DEPRECATION_ISSUE_ID: Final = "deprecated_superseded_by_official"
+
+# quick_run val_type values (unit of "val"), per the local IoT API
+VAL_TYPE_SECONDS: Final = 0
+VAL_TYPE_MINUTES: Final = 1
+VAL_TYPE_HOURS: Final = 2
+VAL_TYPE_LITRES: Final = 3  # WFC01 only
+VAL_TYPE_FOREVER: Final = -1  # sentinel: always_on=1, no quantity
+
+# Services
+SERVICE_SET_VALVE_TIMER: Final = "set_valve_timer"
+SERVICE_SET_POWER_TIMER: Final = "set_power_timer"
+SERVICE_RUN_BY_VOLUME: Final = "run_by_volume"
+ATTR_DURATION: Final = "duration"
+ATTR_VOLUME: Final = "volume"

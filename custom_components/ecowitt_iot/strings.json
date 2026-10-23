@@ -48,5 +48,37 @@
         "name": "Total Water"
       }
     }
+  },
+  "services": {
+    "set_valve_timer": {
+      "name": "Set valve timer",
+      "description": "Open a WFC01 valve for a set number of minutes. The timer runs on the gateway, so the valve closes even if Home Assistant is unavailable.",
+      "fields": {
+        "duration": {
+          "name": "Duration",
+          "description": "Minutes to keep the valve open."
+        }
+      }
+    },
+    "set_power_timer": {
+      "name": "Set power timer",
+      "description": "Switch an AC1100 outlet on for a set number of minutes. The timer runs on the gateway, so the outlet switches off even if Home Assistant is unavailable.",
+      "fields": {
+        "duration": {
+          "name": "Duration",
+          "description": "Minutes to keep the outlet on."
+        }
+      }
+    },
+    "run_by_volume": {
+      "name": "Run by volume",
+      "description": "Open a WFC01 valve until the given volume has passed through it, then close it. WFC01 only.",
+      "fields": {
+        "volume": {
+          "name": "Volume",
+          "description": "Litres to deliver before closing."
+        }
+      }
+    }
   }
 }

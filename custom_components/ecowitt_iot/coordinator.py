@@ -20,7 +20,14 @@ from homeassistant.helpers.update_coordinator import (
 )
 from homeassistant.util import dt as dt_util
 
-from .const import DEFAULT_SCAN_INTERVAL, DOMAIN
+from .const import (
+    DEFAULT_SCAN_INTERVAL,
+    DOMAIN,
+    MODEL_WFC01,
+    VAL_TYPE_FOREVER,
+    VAL_TYPE_LITRES,
+    VAL_TYPE_MINUTES,
+)
 from .models import EcowittDeviceDescription
 
 _LOGGER = logging.getLogger(__name__)
@@ -157,45 +164,87 @@ class EcowittDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             )
             raise
 
-    async def set_device_state(self, device_id: str, state: bool) -> None:
-        """Set device state."""
+    def _get_device(self, device_id: str) -> EcowittDeviceDescription:
+        """Return the configured device for an ID or raise ValueError."""
         device = next(
             (d for d in self.devices if d.device_id == device_id), None
         )
         if not device:
             raise ValueError(f"Device {device_id} not found")
+        return device
 
+    @staticmethod
+    def _quick_run(
+        device: EcowittDeviceDescription, val_type: int, val: int
+    ) -> dict[str, Any]:
+        """Build a quick_run command.
+
+        val_type 0/1/2 run for val seconds/minutes/hours, 3 runs until
+        val litres have passed (WFC01 only). always_on is 1 only for the
+        unbounded run, where val_type and val are ignored.
+        """
+        always_on = 1 if val_type == VAL_TYPE_FOREVER else 0
+        return {
+            "command": [
+                {
+                    "cmd": "quick_run",
+                    "on_type": 0,
+                    "off_type": 0,
+                    "always_on": always_on,
+                    "on_time": 0,
+                    "off_time": 0,
+                    "val_type": 0 if always_on else val_type,
+                    "val": 0 if always_on else val,
+                    "id": int(device.device_id),
+                    "model": device.model,
+                }
+            ]
+        }
+
+    async def set_device_state(self, device_id: str, state: bool) -> None:
+        """Turn a device on indefinitely, or off."""
+        device = self._get_device(device_id)
         _LOGGER.debug("Setting device %s state to %s", device_id, state)
 
-        url = f"http://{self.host}/parse_quick_cmd_iot"
         if state:
-            payload = {
-                "command": [
-                    {
-                        "cmd": "quick_run",
-                        "on_type": 0,
-                        "off_type": 0,
-                        "always_on": 1,
-                        "on_time": 0,
-                        "off_time": 0,
-                        "val_type": 0,
-                        "val": 0,
-                        "id": int(device_id),
-                        "model": device.model,
-                    }
-                ]
-            }
+            payload = self._quick_run(device, VAL_TYPE_FOREVER, 0)
         else:
             payload = {
                 "command": [
                     {
                         "cmd": "quick_stop",
-                        "id": int(device_id),
+                        "id": int(device.device_id),
                         "model": device.model,
                     }
                 ]
             }
+        await self._send_command(payload)
 
+    async def run_for_duration(self, device_id: str, minutes: int) -> None:
+        """Turn a device on with a device-side timer of `minutes`."""
+        device = self._get_device(device_id)
+        if minutes < 1:
+            raise ValueError("Duration must be at least 1 minute")
+        _LOGGER.debug("Running device %s for %s min", device_id, minutes)
+        await self._send_command(
+            self._quick_run(device, VAL_TYPE_MINUTES, int(minutes))
+        )
+
+    async def run_for_volume(self, device_id: str, litres: int) -> None:
+        """Open a WFC01 valve until `litres` have passed."""
+        device = self._get_device(device_id)
+        if device.model != MODEL_WFC01:
+            raise ValueError("Run by volume is only supported on WFC01")
+        if litres < 1:
+            raise ValueError("Volume must be at least 1 litre")
+        _LOGGER.debug("Running device %s for %s L", device_id, litres)
+        await self._send_command(
+            self._quick_run(device, VAL_TYPE_LITRES, int(litres))
+        )
+
+    async def _send_command(self, payload: dict[str, Any]) -> None:
+        """POST a command to the gateway and refresh on success."""
+        url = f"http://{self.host}/parse_quick_cmd_iot"
         try:
             _LOGGER.debug("Sending command to %s: %s", url, payload)
 

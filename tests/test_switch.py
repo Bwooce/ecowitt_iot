@@ -3,10 +3,15 @@
 from __future__ import annotations
 
 import pytest
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from unittest.mock import AsyncMock
+from pytest_homeassistant_custom_component.common import (
+    MockConfigEntry,
+    MockEntityPlatform,
+)
 
 from homeassistant.const import STATE_OFF, STATE_ON
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import current_platform
 
 from custom_components.ecowitt_iot.const import DOMAIN
 from custom_components.ecowitt_iot.switch import async_setup_entry
@@ -40,7 +45,16 @@ def mock_switch_entry(hass: HomeAssistant) -> MockConfigEntry:
 async def _setup(hass, coordinator, adder, entry):
     """Register the coordinator and set up the switch platform."""
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
-    await async_setup_entry(hass, entry, adder.async_add_entities)
+    # async_setup_entry registers entity services, which needs the
+    # platform context HA normally provides.
+    platform = MockEntityPlatform(
+        hass, domain="switch", platform_name=DOMAIN
+    )
+    token = current_platform.set(platform)
+    try:
+        await async_setup_entry(hass, entry, adder.async_add_entities)
+    finally:
+        current_platform.reset(token)
     await hass.async_block_till_done()
     assert len(adder.entities) == 1, "Expected 1 switch"
     return adder.entities[0]
@@ -116,3 +130,27 @@ async def test_switch_turn_off(
     await hass.async_block_till_done()
 
     assert hass.states.get(ENTITY_ID).state == STATE_OFF
+
+
+async def test_timer_services_are_registered_and_dispatch(
+    hass: HomeAssistant,
+    mock_coordinator,
+    mock_add_entities,
+    mock_switch_entry,
+) -> None:
+    """The timer services exist and call the coordinator."""
+    switch = await _setup(
+        hass, mock_coordinator, mock_add_entities, mock_switch_entry
+    )
+    mock_coordinator.run_for_duration = AsyncMock()
+    mock_coordinator.run_for_volume = AsyncMock()
+
+    assert hass.services.has_service(DOMAIN, "set_valve_timer")
+    assert hass.services.has_service(DOMAIN, "set_power_timer")
+    assert hass.services.has_service(DOMAIN, "run_by_volume")
+
+    await switch.async_run_for_duration(15)
+    mock_coordinator.run_for_duration.assert_awaited_once_with("12345", 15)
+
+    await switch.async_run_for_volume(20)
+    mock_coordinator.run_for_volume.assert_awaited_once_with("12345", 20)
