@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Connect to Ecowitt Gateway/Hub",
-        "description": "This integration is deprecated. Use the official Ecowitt integration instead: https://github.com/Ecowitt/ha-ecowitt-iot",
+        "description": "This integration is deprecated: Ecowitt now publishes an official Home Assistant integration for these devices (Ecowitt/ha-ecowitt-iot on GitHub). Set this one up only if you cannot use the official integration.",
         "data": {
           "host": "IP Address or Hostname",
           "temperature_unit": "Temperature unit"
