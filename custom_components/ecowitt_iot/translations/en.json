@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Connect to Ecowitt Gateway/Hub",
-        "description": "This integration is deprecated: Ecowitt now publishes an official Home Assistant integration for these devices (Ecowitt/ha-ecowitt-iot on GitHub). Set this one up only if you cannot use the official integration.",
+        "description": "This unofficial community integration (Bwooce/ecowitt_iot) is deprecated: Ecowitt now publishes an official Home Assistant integration for these devices (Ecowitt/ha-ecowitt-iot on GitHub). Set this one up only if you cannot use the official integration.",
         "data": {
           "host": "IP Address or Hostname",
           "temperature_unit": "Temperature unit"
@@ -23,8 +23,8 @@
   },
   "issues": {
     "deprecated": {
-      "title": "Ecowitt IoT integration is deprecated",
-      "description": "Ecowitt now publishes an official Home Assistant integration that supports the WFC01, WFC02 and AC1100 over the same local API, and is actively maintained. This custom integration will receive no further updates.\n\nInstall the official integration (Learn more), check that your valves and switches appear there, update any automations that reference the old entity IDs, then remove this integration."
+      "title": "Unofficial Ecowitt IoT integration (Bwooce) is deprecated",
+      "description": "Ecowitt now publishes an official Home Assistant integration that supports the WFC01, WFC02 and AC1100 over the same local API, and is actively maintained. This unofficial community integration (Bwooce/ecowitt_iot) will receive no further updates.\n\nInstall the official integration (Learn more), check that your valves and switches appear there, update any automations that reference the old entity IDs, then remove this integration."
     }
   },
   "entity": {

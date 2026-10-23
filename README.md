@@ -35,7 +35,7 @@ plug; the vendor has now filled that gap properly.
    any `utility_meter`) to the new entity IDs. **Entity IDs do not carry
    over**: this integration keyed entities by device ID, the official
    one keys them by the device nickname.
-5. Remove the `Ecowitt IoT (deprecated)` integration, then remove the
+5. Remove the `Ecowitt IoT - unofficial, Bwooce (deprecated)` integration, then remove the
    repository from HACS.
 
 ### What the official integration does differently
