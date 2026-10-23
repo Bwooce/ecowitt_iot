@@ -33,9 +33,12 @@ Also new: `set_valve_timer`, `set_power_timer` and `run_by_volume`
 services that run the timer on the gateway itself (#3), a Repairs notice
 announcing the deprecation, clean unload, and brand assets (#21).
 
-Thank you to everyone who tested and reported. No further releases.
-This repository will be archived on ARCHIVE_DATE; 0.2.0 stays
-installable through HACS after that, but nothing more will change.
+Thank you to everyone who tested, reported and sent fixes, and for
+your patience while this sat untouched for most of a year; a one-person
+side project did not keep up with the demand, and I am glad the vendor
+has taken it on properly. No further releases. This repository will be
+archived on ARCHIVE_DATE; 0.2.0 stays installable through HACS after
+that, but nothing more will change.
 
 ---
 
@@ -55,6 +58,9 @@ https://github.com/Ecowitt/ha-ecowitt-iot
 If this issue still applies there, please raise it on that repository.
 Release 0.2.0 of this integration is final; the README has a migration
 guide. The repository will be archived on ARCHIVE_DATE.
+
+Thank you for your patience - this went unanswered far longer than it
+should have.
 
 ---
 

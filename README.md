@@ -16,7 +16,8 @@
 > makes it read-only; the 0.2.0 release stays installable through HACS,
 > but nothing will be updated and issues cannot be opened.
 
-Thank you to everyone who tested, reported bugs and sent pull requests.
+Thank you to everyone who tested, reported bugs and sent pull requests,
+and for your patience while issues went unanswered for most of a year.
 This started because the core `ecowitt` integration is push-based and
 could not drive the WFC01 WittFlow water timer or the AC1100 WittSwitch
 plug; the vendor has now filled that gap properly.
