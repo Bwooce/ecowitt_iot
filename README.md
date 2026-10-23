@@ -6,14 +6,14 @@
 >
 > **https://github.com/Ecowitt/ha-ecowitt-iot**
 >
-> Release 0.2.0 is the final release of `ecowitt_iot`. It contains one
+> Release 1.1.0 is the final release of `ecowitt_iot`. It contains one
 > safety fix (see below), the long-promised timer services, and a
 > Repairs notice pointing you here. No further changes will be made
 > and new issues will not be worked on.
 >
-> **The repository will be archived three months after the 0.2.0
+> **The repository will be archived three months after the 1.1.0
 > release date** (the exact date is in the release notes). Archiving
-> makes it read-only; the 0.2.0 release stays installable through HACS,
+> makes it read-only; the 1.1.0 release stays installable through HACS,
 > but nothing will be updated and issues cannot be opened.
 
 Thank you to everyone who tested, reported bugs and sent pull requests,
@@ -58,7 +58,7 @@ commands are in the local API and in the `wittiot` library the official
 integration already uses (it supports a run duration internally but does
 not expose it).
 
-## 0.2.0 — final release
+## 1.1.0 — final release
 
 * **Fix:** a bare `200 OK` from the gateway (command accepted, no reading
   yet) was turned into a complete set of fabricated zero readings.

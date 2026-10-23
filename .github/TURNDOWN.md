@@ -1,13 +1,17 @@
 # Turndown runbook
 
 Steps to run once PR #22 is merged. Each one is a public action.
-Timeline: release and close issues on day 0; archive three months
-later, to give people time to migrate. Set ARCHIVE_DATE = release date
-+ 3 months and substitute it below before posting.
+Timeline: released 23 October 2026; issues closed the same day;
+archive on 23 January 2027, three months later.
 
-## 1. Release v0.2.0
+## 1. Release 1.1.0
 
-Tag `main` as `v0.2.0` and publish a GitHub release with this body
+Why 1.1.0 and not 0.2.0: the existing release is tagged `1.0.0`
+(Nov 2024, manifest said 0.1.0). HACS sorts by release tag, so a
+lower-numbered final release would never be offered as an update and
+the deprecation notice would reach nobody. Tag `main` as `1.1.0` (no
+`v` prefix, matching the existing tag) and publish a GitHub release
+with this body
 (HACS surfaces it in the update prompt, which is the only channel that
 reaches installed users):
 
@@ -31,13 +35,14 @@ readings, which `utility_meter` helpers booked as a meter rollover
 
 Also new: `set_valve_timer`, `set_power_timer` and `run_by_volume`
 services that run the timer on the gateway itself (#3), a Repairs notice
-announcing the deprecation, clean unload, and brand assets (#21).
+announcing the deprecation, faster switch state after a command, clean
+unload, and brand assets (#21). Validated on a GW2000 with a live WFC01.
 
 Thank you to everyone who tested, reported and sent fixes, and for
 your patience while this sat untouched for most of a year; a one-person
 side project did not keep up with the demand, and I am glad the vendor
 has taken it on properly. No further releases. This repository will be
-archived on ARCHIVE_DATE; 0.2.0 stays installable through HACS after
+archived on 23 January 2027; 1.1.0 stays installable through HACS after
 that, but nothing more will change.
 
 ---
@@ -56,8 +61,8 @@ AC1100 over the same local API, and is actively maintained:
 https://github.com/Ecowitt/ha-ecowitt-iot
 
 If this issue still applies there, please raise it on that repository.
-Release 0.2.0 of this integration is final; the README has a migration
-guide. The repository will be archived on ARCHIVE_DATE.
+Release 1.1.0 of this integration is final; the README has a migration
+guide. The repository will be archived on 23 January 2027.
 
 Thank you for your patience - this went unanswered far longer than it
 should have.
@@ -80,13 +85,13 @@ repositories you have not added, which is what you saw."
 - #19 (fabricated readings, closed unmerged): comment and leave closed:
 
   > Thank you for this - the diagnosis was exactly right and the fix in
-  > 0.2.0 (final release) does what your PR did: a bare `200 OK` now
+  > 1.1.0 (final release) does what your PR did: a bare `200 OK` now
   > keeps the last real reading or leaves the device unavailable, never
   > zeroed values. Credited in the README and release notes. Sorry it
   > sat unanswered; the project is winding down in favour of Ecowitt's
   > official integration (see the README).
 
-## 3. Archive (on ARCHIVE_DATE, three months after release)
+## 3. Archive (on 23 January 2027, three months after release)
 
 Settings → General → Archive this repository. Archiving is reversible
 and keeps releases installable through HACS. Between release and

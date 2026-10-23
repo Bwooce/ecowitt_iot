@@ -6,6 +6,6 @@ local API:
 
 https://github.com/Ecowitt/ha-ecowitt-iot
 
-Release 0.2.0 is the final release. Install the official integration,
+Release 1.1.0 is the final release. Install the official integration,
 move your automations to its entity IDs, then remove this one. See the
 README for a migration guide and a feature comparison.
