@@ -55,7 +55,10 @@ DEPRECATION_ISSUE_ID: Final = "deprecated_superseded_by_official"
 VAL_TYPE_SECONDS: Final = 0
 VAL_TYPE_MINUTES: Final = 1
 VAL_TYPE_HOURS: Final = 2
-VAL_TYPE_LITRES: Final = 3  # WFC01 only
+VAL_TYPE_LITRES: Final = 3  # WFC01 only; val is in 0.1 L
+# The gateway counts volume in tenths of a litre: val=2 delivered 0.2 L on
+# a live WFC01, and Ecowitt's wittiot library divides val by 10.
+VOLUME_UNITS_PER_LITRE: Final = 10
 VAL_TYPE_FOREVER: Final = -1  # sentinel: always_on=1, no quantity
 
 # Services

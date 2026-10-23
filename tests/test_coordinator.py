@@ -166,7 +166,7 @@ async def test_run_for_duration_sends_minute_timer(
 async def test_run_for_volume_sends_litre_quantity(
     hass: HomeAssistant,
 ) -> None:
-    """A volume run is always_on=0, val_type=3 (litres), val=N."""
+    """A volume run is always_on=0, val_type=3, val in tenths of a litre."""
     session, sent = _capture_session()
     coordinator = _coordinator(hass, session)
     with patch("asyncio.sleep", new=AsyncMock()):
@@ -175,7 +175,7 @@ async def test_run_for_volume_sends_litre_quantity(
     cmd = sent[0]["command"][0]
     assert cmd["always_on"] == 0
     assert cmd["val_type"] == 3
-    assert cmd["val"] == 20
+    assert cmd["val"] == 200
 
 
 async def test_run_for_volume_rejects_ac1100(hass: HomeAssistant) -> None:

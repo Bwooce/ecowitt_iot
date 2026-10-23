@@ -27,6 +27,7 @@ from .const import (
     VAL_TYPE_FOREVER,
     VAL_TYPE_LITRES,
     VAL_TYPE_MINUTES,
+    VOLUME_UNITS_PER_LITRE,
 )
 from .models import EcowittDeviceDescription
 
@@ -180,8 +181,8 @@ class EcowittDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         """Build a quick_run command.
 
         val_type 0/1/2 run for val seconds/minutes/hours, 3 runs until
-        val litres have passed (WFC01 only). always_on is 1 only for the
-        unbounded run, where val_type and val are ignored.
+        val tenths of a litre have passed (WFC01 only). always_on is 1
+        only for the unbounded run, where val_type and val are ignored.
         """
         always_on = 1 if val_type == VAL_TYPE_FOREVER else 0
         return {
@@ -239,7 +240,9 @@ class EcowittDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             raise ValueError("Volume must be at least 1 litre")
         _LOGGER.debug("Running device %s for %s L", device_id, litres)
         await self._send_command(
-            self._quick_run(device, VAL_TYPE_LITRES, int(litres))
+            self._quick_run(
+                device, VAL_TYPE_LITRES, int(litres) * VOLUME_UNITS_PER_LITRE
+            )
         )
 
     async def _send_command(self, payload: dict[str, Any]) -> None:
