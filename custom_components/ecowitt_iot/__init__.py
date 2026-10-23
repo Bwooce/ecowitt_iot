@@ -10,8 +10,9 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers import issue_registry as ir
 
-from .const import DOMAIN
+from .const import DEPRECATION_ISSUE_ID, DOMAIN, OFFICIAL_INTEGRATION_URL
 from .coordinator import EcowittDataUpdateCoordinator
 from .models import EcowittDeviceDescription
 
@@ -24,7 +25,9 @@ PLATFORMS: list[Platform] = [
 ]
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_setup_entry(
+    hass: HomeAssistant, entry: ConfigEntry
+) -> bool:
     """Set up Ecowitt IoT from a config entry."""
     try:
         _LOGGER.debug("Setting up entry with data: %s", entry.data)
@@ -74,10 +77,35 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     except Exception as ex:
         _LOGGER.exception("Failed to setup integration")
         raise ConfigEntryNotReady(
-            f"Failed to connect to device at {entry.data[CONF_HOST]}: {str(ex)}"
+            f"Failed to connect to device at {entry.data[CONF_HOST]}: "
+            f"{ex}"
         ) from ex
 
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
+    ir.async_create_issue(
+        hass,
+        DOMAIN,
+        DEPRECATION_ISSUE_ID,
+        is_fixable=False,
+        severity=ir.IssueSeverity.WARNING,
+        learn_more_url=OFFICIAL_INTEGRATION_URL,
+        translation_key="deprecated",
+    )
+
     return True
+
+
+async def async_unload_entry(
+    hass: HomeAssistant, entry: ConfigEntry
+) -> bool:
+    """Unload an Ecowitt IoT config entry."""
+    unloaded = await hass.config_entries.async_unload_platforms(
+        entry, PLATFORMS
+    )
+    if unloaded:
+        hass.data[DOMAIN].pop(entry.entry_id, None)
+        if not hass.data[DOMAIN]:
+            ir.async_delete_issue(hass, DOMAIN, DEPRECATION_ISSUE_ID)
+    return unloaded

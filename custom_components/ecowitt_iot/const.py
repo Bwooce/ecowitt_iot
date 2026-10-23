@@ -44,3 +44,9 @@ ERROR_BITS_WFC01: Final[dict[int, str]] = {
     4: "low_battery",
     7: "offline",
 }
+
+# Turndown: this integration is superseded by Ecowitt's official one.
+OFFICIAL_INTEGRATION_URL: Final = (
+    "https://github.com/Ecowitt/ha-ecowitt-iot"
+)
+DEPRECATION_ISSUE_ID: Final = "deprecated_superseded_by_official"
