@@ -3,26 +3,82 @@
     "step": {
       "user": {
         "title": "Connect to Ecowitt Gateway/Hub",
-        "description": "Set up your Ecowitt gateway/hub to monitor and control connected devices.",
+        "description": "This integration is deprecated: Ecowitt now publishes an official Home Assistant integration for these devices (Ecowitt/ha-ecowitt-iot on GitHub). Set this one up only if you cannot use the official integration.",
         "data": {
-          "host": "IP Address or Hostname"
-        }
-      },
-      "devices": {
-        "title": "Device Configuration",
-        "description": "Add the devices connected to your Ecowitt IoT hub.",
-        "data": {
-          "devices": "Devices"
+          "host": "IP Address or Hostname",
+          "temperature_unit": "Temperature unit"
         }
       }
     },
     "error": {
       "cannot_connect": "Failed to connect to the gateway/hub",
       "timeout_connect": "Connection timeout",
-      "invalid_host": "Invalid hostname or IP address"
+      "no_devices": "No devices found",
+      "invalid_host": "Invalid hostname or IP address",
+      "invalid_response": "The gateway/hub returned an invalid or empty response. Check the device status, configuration and network connection, then check the Home Assistant logs for the raw response."
     },
     "abort": {
       "already_configured": "Gateway/Hub is already configured"
+    }
+  },
+  "issues": {
+    "deprecated": {
+      "title": "Ecowitt IoT integration is deprecated",
+      "description": "Ecowitt now publishes an official Home Assistant integration that supports the WFC01, WFC02 and AC1100 over the same local API, and is actively maintained. This custom integration will receive no further updates.\n\nInstall the official integration (Learn more), check that your valves and switches appear there, update any automations that reference the old entity IDs, then remove this integration."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "power": {
+        "name": "Power"
+      },
+      "voltage": {
+        "name": "Voltage"
+      },
+      "current": {
+        "name": "Current"
+      },
+      "energy": {
+        "name": "Energy"
+      },
+      "flow_rate": {
+        "name": "Flow Rate"
+      },
+      "total_water": {
+        "name": "Total Water"
+      }
+    }
+  },
+  "services": {
+    "set_valve_timer": {
+      "name": "Set valve timer",
+      "description": "Open a WFC01 valve for a set number of minutes. The timer runs on the gateway, so the valve closes even if Home Assistant is unavailable.",
+      "fields": {
+        "duration": {
+          "name": "Duration",
+          "description": "Minutes to keep the valve open."
+        }
+      }
+    },
+    "set_power_timer": {
+      "name": "Set power timer",
+      "description": "Switch an AC1100 outlet on for a set number of minutes. The timer runs on the gateway, so the outlet switches off even if Home Assistant is unavailable.",
+      "fields": {
+        "duration": {
+          "name": "Duration",
+          "description": "Minutes to keep the outlet on."
+        }
+      }
+    },
+    "run_by_volume": {
+      "name": "Run by volume",
+      "description": "Open a WFC01 valve until the given volume has passed through it, then close it. WFC01 only.",
+      "fields": {
+        "volume": {
+          "name": "Volume",
+          "description": "Litres to deliver before closing."
+        }
+      }
     }
   }
 }

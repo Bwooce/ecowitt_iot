@@ -44,3 +44,29 @@ ERROR_BITS_WFC01: Final[dict[int, str]] = {
     4: "low_battery",
     7: "offline",
 }
+
+# Turndown: this integration is superseded by Ecowitt's official one.
+OFFICIAL_INTEGRATION_URL: Final = (
+    "https://github.com/Ecowitt/ha-ecowitt-iot"
+)
+DEPRECATION_ISSUE_ID: Final = "deprecated_superseded_by_official"
+
+# quick_run val_type values (unit of "val"), per the local IoT API
+VAL_TYPE_SECONDS: Final = 0
+VAL_TYPE_MINUTES: Final = 1
+VAL_TYPE_HOURS: Final = 2
+VAL_TYPE_LITRES: Final = 3  # WFC01 only; val is in 0.1 L
+# The gateway counts volume in tenths of a litre: val=2 delivered 0.2 L on
+# a live WFC01, and Ecowitt's wittiot library divides val by 10.
+VOLUME_UNITS_PER_LITRE: Final = 10
+# Largest volume accepted by the service. 1000 L is val=10000; the
+# gateway's own upper bound is undocumented, so stay well inside it.
+MAX_VOLUME_LITRES: Final = 1000
+VAL_TYPE_FOREVER: Final = -1  # sentinel: always_on=1, no quantity
+
+# Services
+SERVICE_SET_VALVE_TIMER: Final = "set_valve_timer"
+SERVICE_SET_POWER_TIMER: Final = "set_power_timer"
+SERVICE_RUN_BY_VOLUME: Final = "run_by_volume"
+ATTR_DURATION: Final = "duration"
+ATTR_VOLUME: Final = "volume"

@@ -14,7 +14,7 @@ on:
   workflow_dispatch:  # Allow manual triggers
 
 env:
-  DEFAULT_PYTHON: "3.11"
+  DEFAULT_PYTHON: "3.13"
   PRE_COMMIT_HOME: ~/.cache/pre-commit
 
 jobs:
@@ -41,17 +41,8 @@ jobs:
           pytest \
             -v \
             --cov=custom_components.ecowitt_iot \
-            --cov-report=xml \
+            --cov-report=term-missing \
             tests/
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: true
 
   hacs:
     runs-on: ubuntu-latest

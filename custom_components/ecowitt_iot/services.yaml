@@ -1,6 +1,8 @@
 set_valve_timer:
   name: Set valve timer
-  description: Set the valve to run for a specific duration.
+  description: >-
+    Open a WFC01 valve for a set number of minutes. The timer runs on the
+    gateway, so the valve closes even if Home Assistant is unavailable.
   target:
     entity:
       integration: ecowitt_iot
@@ -8,17 +10,21 @@ set_valve_timer:
   fields:
     duration:
       name: Duration
-      description: Duration to run the valve
+      description: Minutes to keep the valve open
       required: true
+      example: 15
       selector:
         number:
           min: 1
           max: 1440
-          unit_of_measurement: minutes
+          unit_of_measurement: min
 
 set_power_timer:
   name: Set power timer
-  description: Set the power outlet to run for a specific duration.
+  description: >-
+    Switch an AC1100 outlet on for a set number of minutes. The timer runs
+    on the gateway, so the outlet switches off even if Home Assistant is
+    unavailable.
   target:
     entity:
       integration: ecowitt_iot
@@ -26,10 +32,32 @@ set_power_timer:
   fields:
     duration:
       name: Duration
-      description: Duration to keep the power on
+      description: Minutes to keep the outlet on
       required: true
+      example: 60
       selector:
         number:
           min: 1
           max: 1440
-          unit_of_measurement: minutes
+          unit_of_measurement: min
+
+run_by_volume:
+  name: Run by volume
+  description: >-
+    Open a WFC01 valve until the given volume has passed through it, then
+    close it. Metered on the device. WFC01 only.
+  target:
+    entity:
+      integration: ecowitt_iot
+      domain: switch
+  fields:
+    volume:
+      name: Volume
+      description: Litres to deliver before closing
+      required: true
+      example: 20
+      selector:
+        number:
+          min: 1
+          max: 1000
+          unit_of_measurement: L

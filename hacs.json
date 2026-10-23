@@ -1,3 +1,4 @@
 {
-    "name": "ecowitt_iot"
+    "name": "Ecowitt IoT (deprecated - use the official integration)",
+    "render_readme": true
 }
